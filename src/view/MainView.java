@@ -35,6 +35,8 @@ public class MainView {
 	private JLabel labelSupplementary;
 	private JLabel labelInfo;
 	
+	private String previousNum = "";
+	
 	private boolean isEnglish = true;
 	
 	private static final char[] digits = {
@@ -73,7 +75,7 @@ public class MainView {
 		frame.getContentPane().setBackground(new Color(224, 193, 105));
 		frame.getContentPane().setFont(new Font("Dialog", Font.PLAIN, 25));
 		frame.setBackground(new Color(224, 193, 105));
-		frame.setBounds(100, 100, 940, 700);
+		frame.setBounds(100, 100, 950, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{375, 0, 0, 0, 349, 0, 0};
@@ -97,7 +99,7 @@ public class MainView {
 		labelEnterYourNum.setFont(new Font("DejaVu Sans Light", Font.PLAIN, 40));
 		labelEnterYourNum.setBackground(new Color(224, 193, 105));
 		GridBagConstraints gbc_labelEnterYourNum = new GridBagConstraints();
-		gbc_labelEnterYourNum.insets = new Insets(0, 0, 5, 5);
+		gbc_labelEnterYourNum.insets = new Insets(10, 20, 10, 10);
 		gbc_labelEnterYourNum.gridx = 0;
 		gbc_labelEnterYourNum.gridy = 2;
 		frame.getContentPane().add(labelEnterYourNum, gbc_labelEnterYourNum);
@@ -106,23 +108,59 @@ public class MainView {
 		textFieldNum.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				int result = checkIfCharIsValid(textFieldNum.getText().charAt(textFieldNum.getText().length()-1), textFieldNum.getText().length()-1);
-				if (result == 1) {
-					textFieldNum.setText(textFieldNum.getText().substring(0, textFieldNum.getText().length()-1));
+				
+				// if input text contains only "-" or no chars at all
+				if (textFieldNum.getText().length() == 0 
+						|| (textFieldNum.getText().length() == 1 
+						&& textFieldNum.getText().charAt(0) == '-')) {
 					labelDirectValue.setText("");
 					labelReverseValue.setText("");
 					labelSupplementaryValue.setText("");
+					previousNum = "";
 					return;
 				}
 				
+				// prevent '-0' and  case
+				if (textFieldNum.getText().charAt(0) == '-' 
+						&& textFieldNum.getText().charAt(1) == '0') {
+					textFieldNum.setText("0");
+					labelDirectValue.setText("00");
+					labelReverseValue.setText("00");
+					labelSupplementaryValue.setText("00");
+					previousNum = "0";
+					return;
+				}
+				
+				// check each char in entered line
+				int result = 0;
+				for (int i = 0; i < textFieldNum.getText().length(); i++) {
+					result = checkIfCharIsValid(textFieldNum.getText().charAt(i), i);
+					if (result == 1) {
+						break;
+					}
+				}
+				if (result == 1) {
+					textFieldNum.setText(previousNum);
+					return;
+				}
+				
+				// determine whether number is negative or not by first char
 				boolean isNegative = checkIfNumberIsNegative(textFieldNum.getText().charAt(0));
 				
 				System.out.println(result);
-				labelSupplementaryValue.setText("KK");
 				
-				labelDirectValue.setText(directValue(Integer.valueOf(textFieldNum.getText()), isNegative));
-				labelReverseValue.setText(reverseValue(Integer.valueOf(textFieldNum.getText()), isNegative));
-				labelSupplementaryValue.setText(supplementaryValue(Integer.valueOf(textFieldNum.getText()), isNegative));
+				// calculate direct, reverse and supplementary form values
+				labelDirectValue.setText(
+						directValue(Integer.valueOf
+								(textFieldNum.getText()), isNegative));
+				labelReverseValue.setText(
+						reverseValue(Integer.valueOf
+								(textFieldNum.getText()), isNegative));
+				labelSupplementaryValue.setText(
+						supplementaryValue(Integer.valueOf(
+								textFieldNum.getText()), isNegative));
+				
+				previousNum = textFieldNum.getText();
 				
 			}
 		});
@@ -141,7 +179,7 @@ public class MainView {
 		labelDirect.setFont(new Font("DejaVu Sans Light", Font.PLAIN, 40));
 		labelDirect.setBackground(new Color(224, 193, 105));
 		GridBagConstraints gbc_labelDirect = new GridBagConstraints();
-		gbc_labelDirect.insets = new Insets(0, 0, 5, 5);
+		gbc_labelDirect.insets = new Insets(0, 20, 5, 5);
 		gbc_labelDirect.gridx = 0;
 		gbc_labelDirect.gridy = 3;
 		frame.getContentPane().add(labelDirect, gbc_labelDirect);
@@ -175,7 +213,7 @@ public class MainView {
 		labelReverse = new JLabel("Reverse");
 		labelReverse.setFont(new Font("DejaVu Sans Light", Font.PLAIN, 40));
 		GridBagConstraints gbc_labelReverse = new GridBagConstraints();
-		gbc_labelReverse.insets = new Insets(0, 0, 5, 5);
+		gbc_labelReverse.insets = new Insets(10, 20, 10, 10);
 		gbc_labelReverse.gridx = 0;
 		gbc_labelReverse.gridy = 4;
 		frame.getContentPane().add(labelReverse, gbc_labelReverse);
@@ -209,7 +247,7 @@ public class MainView {
 		labelSupplementary = new JLabel("Supplementary");
 		labelSupplementary.setFont(new Font("DejaVu Sans Light", Font.PLAIN, 40));
 		GridBagConstraints gbc_labelSupplementary = new GridBagConstraints();
-		gbc_labelSupplementary.insets = new Insets(0, 0, 5, 5);
+		gbc_labelSupplementary.insets = new Insets(10, 20, 10, 10);
 		gbc_labelSupplementary.gridx = 0;
 		gbc_labelSupplementary.gridy = 5;
 		frame.getContentPane().add(labelSupplementary, gbc_labelSupplementary);
@@ -218,7 +256,7 @@ public class MainView {
 		labelInfo.setFont(new Font("DejaVu Sans Light", Font.BOLD, 30));
 		GridBagConstraints gbc_labelInfo = new GridBagConstraints();
 		gbc_labelInfo.gridwidth = 5;
-		gbc_labelInfo.insets = new Insets(5, 15, 0, 15);
+		gbc_labelInfo.insets = new Insets(5, 15, 10, 15);
 		gbc_labelInfo.gridx = 0;
 		gbc_labelInfo.gridy = 6;
 		frame.getContentPane().add(labelInfo, gbc_labelInfo);
@@ -254,23 +292,24 @@ public class MainView {
 			public void actionPerformed(ActionEvent e) {
 				isEnglish = !isEnglish;
 				if (!isEnglish) {
-					btnLocale.setIcon(new ImageIcon("src/img/ukr_flag.png"));
-				} else {
 					btnLocale.setIcon(new ImageIcon("src/img/eng_flag.png"));
+				} else {
+					btnLocale.setIcon(new ImageIcon("src/img/ukr_flag.png"));
 				}
 				translateApp();
 			}
 		});
-		btnLocale.setIcon(new ImageIcon("src/img/eng_flag.png"));
+		btnLocale.setIcon(new ImageIcon("src/img/ukr_flag.png"));
 		btnLocale.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_btnLocale = new GridBagConstraints();
 		gbc_btnLocale.anchor = GridBagConstraints.EAST;
 		gbc_btnLocale.gridx = 5;
 		gbc_btnLocale.gridy = 6;
-		gbc_btnLocale.insets = new Insets(0, 0, 0, 15);
+		gbc_btnLocale.insets = new Insets(0, 0, 10, 15);
 		frame.getContentPane().add(btnLocale, gbc_btnLocale);
 	}
 	
+	// translate application texts based on chosen language (UA or EN)
 	private void translateApp() {
 		if (isEnglish) {
 			labelBinaryNumbers.setText("Binary Numbers Forms");
@@ -278,7 +317,7 @@ public class MainView {
 			labelDirect.setText("Direct");
 			labelReverse.setText("Reverse");
 			labelSupplementary.setText("Supplementary");
-			labelInfo.setText("2025. Bogdan veligorskyi");
+			labelInfo.setText("2025. Bogdan Veligorskyi");
 		} else {
 			labelBinaryNumbers.setText("Форми двійкових чисел");
 			labelEnterYourNum.setText("Уведіть ваше число:");
@@ -289,6 +328,7 @@ public class MainView {
 		}
 	}
 	
+	// check if a char is a digit or "-" and its position
 	private int checkIfCharIsValid(char ch, int position) {
 		if (ch == '-' && position > 0) {
 			return 1;
@@ -300,9 +340,9 @@ public class MainView {
 			}
 		}
 		return 1;
-		
 	}
 	
+	// check if number is a negative by a first char
 	private boolean checkIfNumberIsNegative(char firstChar) {
 		if (firstChar == '-') {
 			return true;
@@ -310,6 +350,7 @@ public class MainView {
 		return false;
 	}
 	
+	// direct form
 	private String directValue(int decimalNum, boolean isNegative) {
 		String s = Integer.toBinaryString(Math.abs(decimalNum));
 		if (isNegative) {
@@ -318,6 +359,7 @@ public class MainView {
 		return "0" + s;
 	}
 	
+	// reverse form
 	private String reverseValue(int decimalNum, boolean isNegative) {
 		String s = Integer.toBinaryString(Math.abs(decimalNum));
 		String reversedString = "";
@@ -334,13 +376,18 @@ public class MainView {
 		return '0' + s;
 	}
 	
+	// supplementary form
 	private String supplementaryValue(int decimalNum, boolean isNegative) {
 		String supplementaryValueString = reverseValue(decimalNum, isNegative);
 		int supplementaryValue = Integer.parseInt(supplementaryValueString, 2);
-		int one = Integer.parseInt("1", 2);
-		int sum = supplementaryValue + one;
-		System.out.println(sum);
-		return Integer.toBinaryString(sum);
+		if (isNegative) {
+			int one = Integer.parseInt("1", 2);
+			int sum = supplementaryValue + one;
+			System.out.println(sum);
+			return Integer.toBinaryString(sum);
+		}
+		return supplementaryValueString;
+		
 	}
 
 }

@@ -292,14 +292,14 @@ public class MainView {
 			public void actionPerformed(ActionEvent e) {
 				isEnglish = !isEnglish;
 				if (!isEnglish) {
-					btnLocale.setIcon(new ImageIcon("src/img/eng_flag.png"));
+					btnLocale.setIcon(new ImageIcon(getClass().getResource("/img/eng_flag.png")));
 				} else {
-					btnLocale.setIcon(new ImageIcon("src/img/ukr_flag.png"));
+					btnLocale.setIcon(new ImageIcon(getClass().getResource("/img/ukr_flag.png")));
 				}
 				translateApp();
 			}
 		});
-		btnLocale.setIcon(new ImageIcon("src/img/ukr_flag.png"));
+		btnLocale.setIcon(new ImageIcon(getClass().getResource("/img/ukr_flag.png")));
 		btnLocale.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_btnLocale = new GridBagConstraints();
 		gbc_btnLocale.anchor = GridBagConstraints.EAST;

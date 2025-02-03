@@ -20,3 +20,7 @@ Java 8, Eclipse IDE for EE Developers (2024-12), Swing library.
 ## How to run application
 
 In order to run application, you need to download project as a archive and run the file BinaryNumbersForms.jar. If you use Linux-based system, additionally you need to make this file executable. 
+
+## Video demonstration
+
+[YouTube](https://youtu.be/sdJwGBTgKF8)
